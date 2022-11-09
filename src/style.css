@@ -95,3 +95,24 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#board {
+  width: 700px;
+  height: 700px;
+  background: #000;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.square {
+  width: calc(700px / 8);
+  height: calc(700px / 8);
+}
+
+.black {
+  background-color: #000;
+}
+
+.white {
+  background-color: white;
+}
