@@ -4,6 +4,9 @@ console.log("hello world");
 const boardElement: HTMLCanvasElement = document.querySelector("#board")!;
 const boardCtx = boardElement.getContext("2d")!;
 
+const whiteQueen = new Image();
+whiteQueen.src = "./white-queen.svg";
+
 enum pieceType {
   king = "king",
   queen = "queen",
@@ -26,9 +29,13 @@ class Piece {
 }
 
 class Board {
+  selected: { x: number; y: number };
+  mouseCoords: { x: number; y: number };
   grid: Array<Array<Piece | null>>;
   ctx: CanvasRenderingContext2D;
   constructor(ctx: CanvasRenderingContext2D) {
+    this.selected = { x: -1, y: -1 };
+    this.mouseCoords = { x: -1, y: -1 };
     this.ctx = ctx;
     this.grid = [];
     for (let i = 0; i < 8; i++) {
@@ -77,7 +84,7 @@ class Board {
       for (let j = 0; j < 8; j++) {
         const x = (boardElement.width / 8) * i;
         const y = (boardElement.height / 8) * j;
-        boardCtx.fillStyle = (i + j) % 2 == 0 ? "white" : "black";
+        boardCtx.fillStyle = (i + j) % 2 == 0 ? "#D7BA89" : "#47320e";
         boardCtx.fillRect(x, y, 100, 100);
       }
     }
@@ -90,8 +97,21 @@ class Board {
           const screenY = (y * boardElement.width) / 8 + 70;
           this.ctx.fillStyle = (x + y) % 2 == 0 ? "black" : "white";
           this.ctx.font = "30px sans-serif";
-          this.ctx.fillText(current.type, screenX, screenY);
-          this.ctx.fillText(current.color, screenX, screenY - 20);
+          if (x == this.selected.x && y == this.selected.y) {
+            this.ctx.fillText(
+              current.type,
+              this.mouseCoords.x - 50,
+              this.mouseCoords.y + 20
+            );
+            this.ctx.fillText(
+              current.color,
+              this.mouseCoords.x - 50,
+              this.mouseCoords.y
+            );
+          } else {
+            this.ctx.fillText(current.type, screenX, screenY);
+            this.ctx.fillText(current.color, screenX, screenY - 20);
+          }
         }
       }
     }
@@ -100,17 +120,14 @@ class Board {
 
 const globalBoard = new Board(boardCtx);
 
-let selectedX = -1;
-let selectedY = -1;
-
 boardElement.addEventListener("mousedown", e => {
   const boardX = Math.floor(e.offsetX / (boardElement.width / 8));
   const boardY = Math.floor(e.offsetY / (boardElement.width / 8));
   console.log("mouse down");
   console.log(e.offsetX, e.offsetY);
   console.log(globalBoard.grid[boardX][boardY], boardX, boardY);
-  selectedX = boardX;
-  selectedY = boardY;
+  globalBoard.selected.x = boardX;
+  globalBoard.selected.y = boardY;
 });
 
 boardElement.addEventListener("mouseup", e => {
@@ -119,9 +136,20 @@ boardElement.addEventListener("mouseup", e => {
   console.log("mouse up");
   console.log(e.offsetX, e.offsetY);
   console.log(boardX, boardY);
-  if (selectedX != -1) {
-    globalBoard.grid[boardX][boardY] = globalBoard.grid[selectedX][selectedY];
-    globalBoard.grid[selectedX][selectedY] = null;
+  if (globalBoard.selected.x != -1) {
+    globalBoard.grid[boardX][boardY] =
+      globalBoard.grid[globalBoard.selected.x][globalBoard.selected.y];
+    if (
+      !(globalBoard.selected.x == boardX && globalBoard.selected.y == boardY)
+    ) {
+      globalBoard.grid[globalBoard.selected.x][globalBoard.selected.y] = null;
+    }
   }
+  globalBoard.selected = { x: -1, y: -1 };
+  globalBoard.renderPieces();
+});
+
+boardElement.addEventListener("mousemove", e => {
+  globalBoard.mouseCoords = { x: e.offsetX, y: e.offsetY };
   globalBoard.renderPieces();
 });
