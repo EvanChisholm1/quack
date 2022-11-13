@@ -97,16 +97,16 @@ button:focus-visible {
 }
 
 #board {
-  width: 700px;
-  height: 700px;
+  width: 800px;
+  height: 800px;
   background: #000;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
 }
 
 .square {
-  width: calc(700px / 8);
-  height: calc(700px / 8);
+  width: calc(800px / 8);
+  height: calc(800px / 8);
 }
 
 .black {
