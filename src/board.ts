@@ -64,7 +64,7 @@ export default class Board {
       }
     }
 
-    if (this.selected.x !== -1) {
+    if (this.selected.x !== -1 && this.grid[this.selected.x][this.selected.y]) {
       const selectedMoves = generateAllMoves(
         this.selected.x,
         this.selected.y,

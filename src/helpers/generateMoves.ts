@@ -1,5 +1,11 @@
 import { MoveList, pieceType } from "../types";
 
+function addIfOnBoard(moves: MoveList, move: { x: number; y: number }) {
+  if (move.x >= 0 && move.x <= 7 && move.y >= 0 && move.y <= 7) {
+    moves.push(move);
+  }
+}
+
 export function generateDiagonalMoves(x: number, y: number): MoveList {
   const moves: MoveList = [];
 
@@ -42,6 +48,23 @@ export function generateStraightMoves(x: number, y: number): MoveList {
   return moves;
 }
 
+export function generateKnightMoves(x: number, y: number): MoveList {
+  const moves: MoveList = [];
+
+  addIfOnBoard(moves, { y: y - 2, x: x + 1 });
+  addIfOnBoard(moves, { y: y - 2, x: x - 1 });
+
+  addIfOnBoard(moves, { y: y + 2, x: x + 1 });
+  addIfOnBoard(moves, { y: y + 2, x: x - 1 });
+
+  addIfOnBoard(moves, { y: y + 1, x: x - 2 });
+  addIfOnBoard(moves, { y: y - 1, x: x - 2 });
+
+  addIfOnBoard(moves, { y: y + 1, x: x + 2 });
+  addIfOnBoard(moves, { y: y - 1, x: x + 2 });
+  return moves;
+}
+
 export function generateAllMoves(
   x: number,
   y: number,
@@ -55,6 +78,11 @@ export function generateAllMoves(
   if (type === pieceType.rook || type === pieceType.queen) {
     const straightMoves = generateStraightMoves(x, y);
     moves = [...moves, ...straightMoves];
+  }
+
+  if (type === pieceType.knight) {
+    const knightMoves = generateKnightMoves(x, y);
+    moves = [...moves, ...knightMoves];
   }
 
   return moves;
