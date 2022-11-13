@@ -68,7 +68,9 @@ export default class Board {
       const selectedMoves = generateAllMoves(
         this.selected.x,
         this.selected.y,
-        this.grid[this.selected.x][this.selected.y]!.type
+        this.grid[this.selected.x][this.selected.y]!.type,
+        this.grid[this.selected.x][this.selected.y]!.color,
+        this
       );
       console.log(selectedMoves);
       for (const move of selectedMoves) {
