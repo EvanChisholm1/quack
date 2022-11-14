@@ -11,13 +11,22 @@ function addIfOnBoard(moves: MoveList, move: { x: number; y: number }) {
   if (isOnBoard(move)) moves.push(move);
 }
 
+function isPiece(x: number, y: number, board: Board) {
+  if (isOnBoard({ x, y }) && board.grid[x][y] !== null) return true;
+  else return false;
+}
+
 function isEnemyOrEmpty(
   x: number,
   y: number,
   color: "black" | "white",
   board: Board
 ) {
-  if (board.grid[x][y] === null || isEnemy(x, y, color, board)) return true;
+  if (
+    isOnBoard({ x, y }) &&
+    (board.grid[x][y] === null || isEnemy(x, y, color, board))
+  )
+    return true;
   else return false;
 }
 
@@ -44,24 +53,45 @@ export function generateDiagonalMoves(x: number, y: number): MoveList {
   return moves;
 }
 
-export function generateStraightMoves(x: number, y: number): MoveList {
+export function generateStraightMoves(
+  x: number,
+  y: number,
+  color: "black" | "white",
+  board: Board
+): MoveList {
   const moves: MoveList = [];
 
+  let upBlocked = false;
+  let downBlocked = false;
+  let leftBlocked = false;
+  let rightBlocked = false;
+
   for (let i = 1; i < 8; i++) {
-    // vertical moves
-    if (y + i <= 7) {
-      moves.push({ x, y: y + i });
+    if (y + i <= 7 && !downBlocked) {
+      if (isEnemyOrEmpty(x, y + i, color, board)) {
+        moves.push({ x, y: y + i });
+      }
+      if (isPiece(x, y + i, board)) downBlocked = true;
     }
-    if (y - i >= 0) {
-      moves.push({ x, y: y - i });
+    if (y - i >= 0 && !upBlocked) {
+      if (isEnemyOrEmpty(x, y - i, color, board)) {
+        moves.push({ x, y: y - i });
+      }
+      if (isPiece(x, y - i, board)) upBlocked = true;
     }
 
     // horizontal moves
-    if (x + i <= 7) {
-      moves.push({ x: x + i, y });
+    if (x + i <= 7 && !leftBlocked) {
+      if (isEnemyOrEmpty(x + i, y, color, board)) {
+        moves.push({ x: x + i, y });
+      }
+      if (isPiece(x + i, y, board)) leftBlocked = true;
     }
-    if (x - i >= 0) {
-      moves.push({ x: x - i, y });
+    if (x - i >= 0 && !rightBlocked) {
+      if (isEnemyOrEmpty(x + i, y, color, board)) {
+        moves.push({ x: x - i, y });
+      }
+      if (isPiece(x - i, y, board)) rightBlocked = true;
     }
   }
 
@@ -203,7 +233,7 @@ export function generateAllMoves(
     moves = [...moves, ...diagonalMoves];
   }
   if (type === pieceType.rook || type === pieceType.queen) {
-    const straightMoves = generateStraightMoves(x, y);
+    const straightMoves = generateStraightMoves(x, y, color, board);
     moves = [...moves, ...straightMoves];
   }
 
