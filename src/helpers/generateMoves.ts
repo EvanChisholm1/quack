@@ -11,6 +11,21 @@ function addIfOnBoard(moves: MoveList, move: { x: number; y: number }) {
   if (isOnBoard(move)) moves.push(move);
 }
 
+function isEnemyOrEmpty(
+  x: number,
+  y: number,
+  color: "black" | "white",
+  board: Board
+) {
+  if (board.grid[x][y] === null || isEnemy(x, y, color, board)) return true;
+  else return false;
+}
+
+function isEnemy(x: number, y: number, color: "black" | "white", board: Board) {
+  if (board.grid[x][y] && board.grid[x][y]?.color !== color) return true;
+  else return false;
+}
+
 export function generateDiagonalMoves(x: number, y: number): MoveList {
   const moves: MoveList = [];
 
@@ -125,6 +140,56 @@ export function generatePawnMoves(
   return moves;
 }
 
+function generateKingMoves(
+  x: number,
+  y: number,
+  color: "black" | "white",
+  board: Board
+): MoveList {
+  const moves: MoveList = [];
+
+  if (
+    isOnBoard({ x: x - 1, y: y - 1 }) &&
+    isEnemyOrEmpty(x - 1, y - 1, color, board)
+  ) {
+    moves.push({ x: x - 1, y: y - 1 });
+  }
+  if (isOnBoard({ x: x - 1, y: y }) && isEnemyOrEmpty(x - 1, y, color, board)) {
+    moves.push({ x: x - 1, y });
+  }
+  if (
+    isOnBoard({ x: x - 1, y: y + 1 }) &&
+    isEnemyOrEmpty(x - 1, y + 1, color, board)
+  ) {
+    moves.push({ x: x - 1, y: y + 1 });
+  }
+
+  if (
+    isOnBoard({ x: x + 1, y: y - 1 }) &&
+    isEnemyOrEmpty(x + 1, y - 1, color, board)
+  ) {
+    moves.push({ x: x + 1, y: y - 1 });
+  }
+  if (isOnBoard({ x: x + 1, y: y }) && isEnemyOrEmpty(x + 1, y, color, board)) {
+    moves.push({ x: x + 1, y });
+  }
+  if (
+    isOnBoard({ x: x + 1, y: y + 1 }) &&
+    isEnemyOrEmpty(x + 1, y + 1, color, board)
+  ) {
+    moves.push({ x: x + 1, y: y + 1 });
+  }
+
+  if (isOnBoard({ x, y: y + 1 }) && isEnemyOrEmpty(x, y + 1, color, board)) {
+    moves.push({ x, y: y + 1 });
+  }
+  if (isOnBoard({ x, y: y - 1 }) && isEnemyOrEmpty(x, y - 1, color, board)) {
+    moves.push({ x, y: y - 1 });
+  }
+
+  return moves;
+}
+
 export function generateAllMoves(
   x: number,
   y: number,
@@ -149,6 +214,10 @@ export function generateAllMoves(
   if (type === pieceType.pawn) {
     const pawnMoves = generatePawnMoves(x, y, color, board);
     moves = [...moves, ...pawnMoves];
+  }
+  if (type === pieceType.king) {
+    const kingMoves = generateKingMoves(x, y, color, board);
+    moves = [...moves, ...kingMoves];
   }
 
   return moves;
