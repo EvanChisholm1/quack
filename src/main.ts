@@ -64,9 +64,10 @@ const evaluateButton: HTMLButtonElement | null =
   document.querySelector("#evaluate-button");
 evaluateButton?.addEventListener("click", e => {
   console.log("moving...");
-  const minmax = search(globalBoard, 2, "white");
+  const minmax = search(globalBoard, 4, "white");
   console.log(minmax);
   globalBoard.make(minmax.move);
   scoreHeader!.innerHTML = `score: ${evaluateBoard(globalBoard)}`;
   console.log("move made!");
+  globalBoard.renderPieces();
 });

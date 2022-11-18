@@ -80,14 +80,17 @@ export function evaluateBoard(board: Board): number {
     queen: 900,
   };
 
-  for (const column of board.grid) {
-    for (const square of column) {
+  for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 8; y++) {
+      const square = board.grid[x][y];
       if (square) {
         if (square.color == "black") {
           blackPoints += pointsMap[square.type];
+          blackPoints += (y + 1) * 10;
         }
         if (square.color == "white") {
           whitePoints += pointsMap[square.type];
+          whitePoints += 8 * 10 - (y + 1) * 10;
         }
       }
     }
