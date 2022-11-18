@@ -2,6 +2,7 @@ import Piece from "./piece";
 import { Move, pieceType } from "./types";
 import { generateAllMoves } from "./helpers/generateMoves";
 import { CELL_SIZE } from "./boardElement";
+import imageMap from "./imageMap";
 
 export default class Board {
   selected: { x: number; y: number };
@@ -89,24 +90,24 @@ export default class Board {
         const current = this.grid[x][y];
         if (current) {
           const screenX = x * CELL_SIZE;
-          const screenY = y * CELL_SIZE + 70;
-          // this.ctx.fillStyle = (x + y) % 2 == 0 ? "black" : "white";
-          this.ctx.fillStyle = current.color;
-          this.ctx.font = "30px sans-serif";
+          const screenY = y * CELL_SIZE;
+
           if (x == this.selected.x && y == this.selected.y) {
-            this.ctx.fillText(
-              current.type,
-              this.mouseCoords.x - 50,
-              this.mouseCoords.y + 20
-            );
-            this.ctx.fillText(
-              current.color,
-              this.mouseCoords.x - 50,
-              this.mouseCoords.y
+            this.ctx.drawImage(
+              imageMap[`${current.color}-${current.type}`],
+              this.mouseCoords.x - CELL_SIZE / 2,
+              this.mouseCoords.y - CELL_SIZE / 2,
+              CELL_SIZE,
+              CELL_SIZE
             );
           } else {
-            this.ctx.fillText(current.type, screenX, screenY);
-            this.ctx.fillText(current.color, screenX, screenY - 20);
+            this.ctx.drawImage(
+              imageMap[`${current.color}-${current.type}`],
+              screenX,
+              screenY,
+              CELL_SIZE,
+              CELL_SIZE
+            );
           }
         }
       }
