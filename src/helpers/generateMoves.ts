@@ -128,20 +128,33 @@ export function generateStraightMoves(
   return moves;
 }
 
-export function generateKnightMoves(x: number, y: number): MoveList {
+export function generateKnightMoves(
+  x: number,
+  y: number,
+  color: "black" | "white",
+  board: Board
+): MoveList {
   const moves: MoveList = [];
 
-  addIfOnBoard(moves, { y: y - 2, x: x + 1 });
-  addIfOnBoard(moves, { y: y - 2, x: x - 1 });
+  if (isEnemyOrEmpty(x + 1, y - 2, color, board))
+    addIfOnBoard(moves, { y: y - 2, x: x + 1 });
+  if (isEnemyOrEmpty(x - 1, y - 2, color, board))
+    addIfOnBoard(moves, { y: y - 2, x: x - 1 });
 
-  addIfOnBoard(moves, { y: y + 2, x: x + 1 });
-  addIfOnBoard(moves, { y: y + 2, x: x - 1 });
+  if (isEnemyOrEmpty(x + 1, y + 2, color, board))
+    addIfOnBoard(moves, { y: y + 2, x: x + 1 });
+  if (isEnemyOrEmpty(x - 1, y + 2, color, board))
+    addIfOnBoard(moves, { y: y + 2, x: x - 1 });
 
-  addIfOnBoard(moves, { y: y + 1, x: x - 2 });
-  addIfOnBoard(moves, { y: y - 1, x: x - 2 });
+  if (isEnemyOrEmpty(x - 2, y + 1, color, board))
+    addIfOnBoard(moves, { y: y + 1, x: x - 2 });
+  if (isEnemyOrEmpty(x - 2, y - 1, color, board))
+    addIfOnBoard(moves, { y: y - 1, x: x - 2 });
 
-  addIfOnBoard(moves, { y: y + 1, x: x + 2 });
-  addIfOnBoard(moves, { y: y - 1, x: x + 2 });
+  if (isEnemyOrEmpty(x + 2, y + 1, color, board))
+    addIfOnBoard(moves, { y: y + 1, x: x + 2 });
+  if (isEnemyOrEmpty(x + 2, y - 1, color, board))
+    addIfOnBoard(moves, { y: y - 1, x: x + 2 });
   return moves;
 }
 
@@ -268,7 +281,7 @@ export function generateAllMoves(
   }
 
   if (type === pieceType.knight) {
-    const knightMoves = generateKnightMoves(x, y);
+    const knightMoves = generateKnightMoves(x, y, color, board);
     moves = [...moves, ...knightMoves];
   }
   if (type === pieceType.pawn) {

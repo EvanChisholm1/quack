@@ -1,6 +1,7 @@
 import "./style.css";
 import Board from "./board";
 import { boardElement, boardCtx } from "./boardElement";
+import { evaluateBoard, search } from "./treeSearch";
 
 console.log("hello world");
 
@@ -15,6 +16,19 @@ boardElement.addEventListener("mousedown", e => {
   globalBoard.selected.x = boardX;
   globalBoard.selected.y = boardY;
   globalBoard.renderPieces();
+});
+
+boardElement.addEventListener("touchstart", e => {
+  // const boardX = Math.floor(e./ (boardElement.width / 8));
+  // const boardY = Math.floor(e.offsetY / (boardElement.width / 8));
+  // console.log("mouse down");
+  // console.log(e.offsetX, e.offsetY);
+  // console.log(globalBoard.grid[boardX][boardY], boardX, boardY);
+  // globalBoard.selected.x = boardX;
+  // globalBoard.selected.y = boardY;
+  // globalBoard.renderPieces();
+  console.log(e.targetTouches[0].pageX - (e as any).target.offsetLeft);
+  console.log(e.targetTouches[0].pageY - (e as any).target.offsetTop);
 });
 
 boardElement.addEventListener("mouseup", e => {
@@ -42,4 +56,17 @@ boardElement.addEventListener("mouseup", e => {
 boardElement.addEventListener("mousemove", e => {
   globalBoard.mouseCoords = { x: e.offsetX, y: e.offsetY };
   globalBoard.renderPieces();
+});
+
+const scoreHeader: HTMLHeadingElement = document.querySelector("#score")!;
+
+const evaluateButton: HTMLButtonElement | null =
+  document.querySelector("#evaluate-button");
+evaluateButton?.addEventListener("click", e => {
+  console.log("moving...");
+  const minmax = search(globalBoard, 2, "white");
+  console.log(minmax);
+  globalBoard.make(minmax.move);
+  scoreHeader!.innerHTML = `score: ${evaluateBoard(globalBoard)}`;
+  console.log("move made!");
 });

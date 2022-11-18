@@ -1,5 +1,5 @@
 import Piece from "./piece";
-import { pieceType } from "./types";
+import { Move, pieceType } from "./types";
 import { generateAllMoves } from "./helpers/generateMoves";
 import { CELL_SIZE } from "./boardElement";
 
@@ -111,5 +111,10 @@ export default class Board {
         }
       }
     }
+  }
+
+  make(move: Move) {
+    this.grid[move.to.x][move.to.y] = this.grid[move.from.x][move.from.y];
+    this.grid[move.from.x][move.from.y] = null;
   }
 }
