@@ -1,6 +1,6 @@
 import Board from "./board";
 import { generateAllMoves } from "./helpers/generateMoves";
-import { pieceType, Move } from "./types";
+import { Move } from "./types";
 
 export function search(
   board: Board,

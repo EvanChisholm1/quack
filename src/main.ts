@@ -75,7 +75,7 @@ const scoreHeader: HTMLHeadingElement = document.querySelector("#score")!;
 
 const evaluateButton: HTMLButtonElement | null =
   document.querySelector("#evaluate-button");
-evaluateButton?.addEventListener("click", e => {
+evaluateButton?.addEventListener("click", () => {
   console.log("moving...");
   const minmax = search(
     globalBoard,
@@ -101,5 +101,11 @@ function playSelf(turn: "white" | "black") {
     playSelf(turn === "white" ? "black" : "white");
   }, 500);
 }
+
+const playSelfButton: HTMLButtonElement | null =
+  document.querySelector("#playself");
+playSelfButton?.addEventListener("click", () => {
+  playSelf("white");
+});
 
 // playSelf();
