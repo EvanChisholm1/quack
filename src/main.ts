@@ -58,16 +58,48 @@ boardElement.addEventListener("mousemove", e => {
   globalBoard.renderPieces();
 });
 
+let maximizing: "white" | "black" = "white";
+const whiteButton: HTMLButtonElement | null =
+  document.querySelector("#white-button");
+whiteButton?.addEventListener("click", () => {
+  maximizing = "white";
+});
+
+const blackButton: HTMLButtonElement | null =
+  document.querySelector("#black-button");
+blackButton?.addEventListener("click", () => {
+  maximizing = "black";
+});
+
 const scoreHeader: HTMLHeadingElement = document.querySelector("#score")!;
 
 const evaluateButton: HTMLButtonElement | null =
   document.querySelector("#evaluate-button");
 evaluateButton?.addEventListener("click", e => {
   console.log("moving...");
-  const minmax = search(globalBoard, 4, "white");
+  const minmax = search(
+    globalBoard,
+    4,
+    maximizing,
+    -Infinity,
+    Infinity,
+    maximizing
+  );
   console.log(minmax);
   globalBoard.make(minmax.move);
-  scoreHeader!.innerHTML = `score: ${evaluateBoard(globalBoard)}`;
+  scoreHeader!.innerHTML = `score: ${evaluateBoard(globalBoard, maximizing)}`;
   console.log("move made!");
   globalBoard.renderPieces();
 });
+
+function playSelf(turn: "white" | "black") {
+  const { move } = search(globalBoard, 4, turn, -Infinity, Infinity, turn);
+  globalBoard.make(move);
+  globalBoard.renderPieces();
+
+  setTimeout(() => {
+    playSelf(turn === "white" ? "black" : "white");
+  }, 500);
+}
+
+// playSelf();
