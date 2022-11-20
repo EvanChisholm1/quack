@@ -2,6 +2,15 @@ import Board from "./board";
 import { generateAllMoves } from "./helpers/generateMoves";
 import { Move } from "./types";
 
+const pointsMap: { [key: string]: number } = {
+  bishop: 325,
+  knight: 300,
+  king: 10000,
+  pawn: 100,
+  rook: 500,
+  queen: 900,
+};
+
 export function search(
   board: Board,
   depth: number,
@@ -35,48 +44,81 @@ export function search(
     }
   }
 
-  let minMinMax = {
-    minmax: Infinity,
-    move: { from: { x: 0, y: 0 }, to: { x: 0, y: 0 } },
-  };
-  let maxMinMax = {
-    minmax: -Infinity,
-    move: { from: { x: 0, y: 0 }, to: { x: 0, y: 0 } },
-  };
+  const sortedMoves = possibleMoves.sort((moveA: Move, moveB: Move) => {
+    let moveAPoints = 0;
+    let moveBPoints = 0;
+    if (board.grid[moveA.to.x][moveA.to.y])
+      moveAPoints = pointsMap[board.grid[moveA.to.x][moveA.to.y]!.type];
+    if (board.grid[moveB.to.x][moveB.to.y])
+      moveAPoints = pointsMap[board.grid[moveB.to.x][moveB.to.y]!.type];
+    return moveAPoints - moveBPoints;
+  });
 
-  for (const move of possibleMoves) {
-    const from = board.grid[move.from.x][move.from.y];
-    const to = board.grid[move.to.x][move.to.y];
-
-    board.make(move);
-    const returnObject = search(
-      board,
-      depth - 1,
-      turn === "black" ? "white" : "black",
-      alpha,
-      beta,
-      maximizingPlayer
-    );
-
-    board.grid[move.from.x][move.from.y] = from;
-    board.grid[move.to.x][move.to.y] = to;
-
-    returnObject.move = move;
-
-    if (returnObject.minmax > maxMinMax.minmax) maxMinMax = returnObject;
-    if (returnObject.minmax < minMinMax.minmax) minMinMax = returnObject;
-
-    // if (returnObject.minmax >= beta && turn == "white") break;
-    // if (returnObject.minmax <= alpha && turn == "black") break;
-
-    if (turn == "white") alpha = Math.max(alpha, returnObject.minmax);
-    if (turn == "black") beta = Math.max(beta, returnObject.minmax);
-  }
+  let newAlpha = alpha;
+  let newBeta = beta;
 
   if (turn === maximizingPlayer) {
-    return maxMinMax;
+    let bestValue = {
+      minmax: -Infinity,
+      move: { from: { x: 0, y: 0 }, to: { x: 0, y: 0 } },
+    };
+
+    for (const move of sortedMoves) {
+      const from = board.grid[move.from.x][move.from.y];
+      const to = board.grid[move.to.x][move.to.y];
+
+      board.make(move);
+
+      const ret = search(
+        board,
+        depth - 1,
+        turn === "black" ? "white" : "black",
+        newAlpha,
+        newBeta,
+        maximizingPlayer
+      );
+
+      board.grid[move.from.x][move.from.y] = from;
+      board.grid[move.to.x][move.to.y] = to;
+
+      ret.move = move;
+
+      if (ret.minmax > bestValue.minmax) bestValue = ret;
+      newAlpha = Math.max(newAlpha, bestValue.minmax);
+      if (newBeta <= newAlpha) break;
+    }
+    return bestValue;
   } else {
-    return minMinMax;
+    let bestValue = {
+      minmax: Infinity,
+      move: { from: { x: 0, y: 0 }, to: { x: 0, y: 0 } },
+    };
+
+    for (const move of sortedMoves) {
+      const from = board.grid[move.from.x][move.from.y];
+      const to = board.grid[move.to.x][move.to.y];
+
+      board.make(move);
+
+      const ret = search(
+        board,
+        depth - 1,
+        turn === "black" ? "white" : "black",
+        newAlpha,
+        newBeta,
+        maximizingPlayer
+      );
+
+      board.grid[move.from.x][move.from.y] = from;
+      board.grid[move.to.x][move.to.y] = to;
+
+      ret.move = move;
+
+      if (ret.minmax < bestValue.minmax) bestValue = ret;
+      newBeta = Math.min(newBeta, bestValue.minmax);
+      if (newBeta <= newAlpha) break;
+    }
+    return bestValue;
   }
 }
 
@@ -86,15 +128,6 @@ export function evaluateBoard(
 ): number {
   let whitePoints = 0;
   let blackPoints = 0;
-
-  const pointsMap: { [key: string]: number } = {
-    bishop: 325,
-    knight: 300,
-    king: 10000,
-    pawn: 100,
-    rook: 500,
-    queen: 900,
-  };
 
   for (let x = 0; x < 8; x++) {
     for (let y = 0; y < 8; y++) {

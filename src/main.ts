@@ -79,7 +79,7 @@ evaluateButton?.addEventListener("click", () => {
   console.log("moving...");
   const minmax = search(
     globalBoard,
-    4,
+    5,
     maximizing,
     -Infinity,
     Infinity,
@@ -93,7 +93,7 @@ evaluateButton?.addEventListener("click", () => {
 });
 
 function playSelf(turn: "white" | "black") {
-  const { move } = search(globalBoard, 4, turn, -Infinity, Infinity, turn);
+  const { move } = search(globalBoard, 5, turn, -Infinity, Infinity, turn);
   globalBoard.make(move);
   globalBoard.renderPieces();
 
